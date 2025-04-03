@@ -1,0 +1,118 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #d3dce6;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section {
+    background: #e2e8f0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease-in-out;
+}
+
+section:hover {
+    transform: scale(1.02);
+}
+
+h2 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #a8b3c4;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    background: #f5f7fa;
+    transition: border-color 0.3s, background 0.3s;
+}
+
+input:focus {
+    border-color: #5c738d;
+    background: #ffffff;
+}
+
+button {
+    background: #5c738d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background: #485a6f;
+    transform: scale(1.05);
+}
+
+.list {
+    margin-top: 15px;
+}
+
+.item, .task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.item:hover, .task:hover {
+    transform: scale(1.02);
+}
+
+.item span, .task span {
+    flex: 1;
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.bought, .completed {
+    text-decoration: line-through;
+    color: #8492a6;
+    opacity: 0.7;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-buttons button {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.task button, .item button {
+    margin-right: 10px;
+}
+#clearTasksBtn, #clearItemsBtn {
+    margin-top: 20px;
+}
