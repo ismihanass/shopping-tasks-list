@@ -6,22 +6,8 @@ document.getElementById("addTaskBtn").addEventListener("click", addTask); // Eve
 document.getElementById("clearItemsBtn").addEventListener("click", clearItems); // Event listener for clearing items
 document.getElementById("clearTasksBtn").addEventListener("click", clearTasks); // Event listener for clearing tasks
 
-function addItem() { // Function to add item to the shopping list
-    let input = document.getElementById("itemInput");
-    let item = input.value.trim();
-    if (item) {
-        items.push({ name: item, bought: false });
-        // console.log("Item added:", item, items);
-        input.value = "";
-        renderItems();
-        saveItemsToLocalStorage();
-    } else {
-        // console.log("Empty input - item not added.");
-    }
-}
 
 function renderItems() { // Function to render the shopping list
-    // console.log("Rendering shopping list", items);
     const list = document.getElementById("shoppingList");
     list.innerHTML = "";
 
@@ -36,14 +22,12 @@ function renderItems() { // Function to render the shopping list
         let toggleBtn = document.createElement("button");
         toggleBtn.textContent = "Toggle Bought";
         toggleBtn.addEventListener("click", () => {
-            // console.log("Toggling bought status for:", item);
             toggleBought(i);
         });
 
         let deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.addEventListener("click", () => {
-            // console.log("Deleting item:", item);
             deleteItem(i);
         });
 
@@ -56,12 +40,22 @@ function renderItems() { // Function to render the shopping list
         itemElement.append(nameSpan, toggleBtn, deleteBtn, editBtn);
         list.appendChild(itemElement);
     });
+
+}
+function addItem() { // Function to add item to the shopping list
+    let input = document.getElementById("itemInput");
+    let item = input.value.trim();
+    if (item) {
+        items.push({ name: item, bought: false });
+        input.value = "";
+        renderItems();
+        saveItemsToLocalStorage();
+    } 
 }
 
 function toggleBought(index) { // Function to toggle the "bought" status of an item
     if (items[index]) {
         items[index].bought = !items[index].bought;
-        // console.log("Updated item status:", items[index]);
         renderItems();
         saveItemsToLocalStorage();
     }
@@ -69,9 +63,7 @@ function toggleBought(index) { // Function to toggle the "bought" status of an i
 
 function deleteItem(index) { // Function to delete an item from the shopping list
     if (index >= 0 && index < items.length) {
-        // console.log("Before deletion:", items);
         items.splice(index, 1);
-        // console.log("After deletion:", items);
         renderItems();
         saveItemsToLocalStorage();
     }
@@ -110,17 +102,15 @@ function addTask() { // Function to add a task to the task list
     let task = input.value.trim();
     if (task) {
         tasks.push({ name: task, completed: false });
-        // console.log("Task added:", task, tasks);
+      
         input.value = "";
         renderTasks();
         saveTasksToLocalStorage();
-    } else {
-        // console.log("Empty input - task not added.");
-    }
+    } 
 }
 
 function renderTasks() { // Function to render the task list
-    // console.log("Rendering task list ", tasks);
+  
     const list = document.getElementById("taskList");
     list.innerHTML = "";
 
@@ -135,7 +125,6 @@ function renderTasks() { // Function to render the task list
         let toggleBtn = document.createElement("button");
         toggleBtn.textContent = "Complete";
         toggleBtn.addEventListener("click", () => {
-            // console.log("Toggling completion status for:", task);
             toggleCompleted(i);
         });
 
@@ -143,7 +132,6 @@ function renderTasks() { // Function to render the task list
         deleteBtn.textContent = "Delete";
         deleteBtn.className = 'deleteBtn';
         deleteBtn.addEventListener("click", () => {
-            // console.log("Deleting task:", task);
             deleteTask(i);
         });
 
@@ -161,7 +149,7 @@ function renderTasks() { // Function to render the task list
 function toggleCompleted(index) { // Function to toggle the "completed" status of a task
     if (tasks[index]) {
         tasks[index].completed = !tasks[index].completed;
-        // console.log("Updated task status:", tasks[index]);
+        
         renderTasks();
         saveTasksToLocalStorage();
     }
@@ -169,9 +157,7 @@ function toggleCompleted(index) { // Function to toggle the "completed" status o
 
 function deleteTask(index) { // Function to delete a task from the task list
     if (index >= 0 && index < tasks.length) {
-        // console.log("Before deletion:", tasks);
         tasks.splice(index, 1);
-        // console.log("After deletion:", tasks);
         renderTasks();
         saveTasksToLocalStorage();
     }
@@ -206,7 +192,6 @@ function clearTasks() { // Function to clear all tasks from the task list
 }
 
 window.onload = function () { // Function to load saved data on page load
-    // console.log("loaded");
     loadItemsFromLocalStorage();
     loadTasksFromLocalStorage();
     renderItems();
