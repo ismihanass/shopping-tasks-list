@@ -1,48 +1,59 @@
 const items = [];
 const tasks = [];
 
-document.getElementById("addItemBtn").addEventListener("click", addItem); // Event listener for adding item
-document.getElementById("addTaskBtn").addEventListener("click", addTask); // Event listener for adding task
-document.getElementById("clearItemsBtn").addEventListener("click", clearItems); // Event listener for clearing items
-document.getElementById("clearTasksBtn").addEventListener("click", clearTasks); // Event listener for clearing tasks
+// Helper functions
 
+function createButton(text, onClick) {
+    const button = document.createElement("button");
+    button.textContent = text;
+    button.addEventListener("click", onClick);
+    return button;
+}
 
-function renderItems() { // Function to render the shopping list
+// Render Shopping List
+function renderItems() {
     const list = document.getElementById("shoppingList");
     list.innerHTML = "";
 
     items.forEach((item, i) => {
-        let itemElement = document.createElement("div");
-        itemElement.className = "item";
-        if (item.bought) itemElement.classList.add("bought");
+        const itemElement = document.createElement("div");
+        itemElement.className = `item ${item.bought ? 'bought' : ''}`;
 
-        let nameSpan = document.createElement("span");
+        itemElement.appendChild(createButton("Toggle Bought", () => toggleBought(i)));
+        itemElement.appendChild(createButton("Delete", () => deleteItem(i)));
+        itemElement.appendChild(createButton("Edit", () => editItem(i)));
+
+        const nameSpan = document.createElement("span");
         nameSpan.textContent = item.name;
+        itemElement.prepend(nameSpan);
 
-        let toggleBtn = document.createElement("button");
-        toggleBtn.textContent = "Toggle Bought";
-        toggleBtn.addEventListener("click", () => {
-            toggleBought(i);
-        });
-
-        let deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.addEventListener("click", () => {
-            deleteItem(i);
-        });
-
-        let editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () => {
-            editItem(i);
-        });
-
-        itemElement.append(nameSpan, toggleBtn, deleteBtn, editBtn);
         list.appendChild(itemElement);
     });
-
 }
-function addItem() { // Function to add item to the shopping list
+
+// Render Task List
+function renderTasks() {
+    const list = document.getElementById("taskList");
+    list.innerHTML = "";
+
+    tasks.forEach((task, i) => {
+        const taskElement = document.createElement("div");
+        taskElement.className = `task ${task.completed ? 'completed' : ''}`;
+
+        taskElement.appendChild(createButton("Complete", () => toggleCompleted(i)));
+        taskElement.appendChild(createButton("Delete", () => deleteTask(i)));
+        taskElement.appendChild(createButton("Edit", () => editTask(i)));
+
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = task.name;
+        taskElement.prepend(nameSpan);
+
+        list.appendChild(taskElement);
+    });
+}
+
+// Add Item to Shopping List
+function addItem() {
     let input = document.getElementById("itemInput");
     let item = input.value.trim();
     if (item) {
@@ -50,10 +61,11 @@ function addItem() { // Function to add item to the shopping list
         input.value = "";
         renderItems();
         saveItemsToLocalStorage();
-    } 
+    }
 }
 
-function toggleBought(index) { // Function to toggle the "bought" status of an item
+// Toggle Bought Status of Item
+function toggleBought(index) {
     if (items[index]) {
         items[index].bought = !items[index].bought;
         renderItems();
@@ -61,7 +73,8 @@ function toggleBought(index) { // Function to toggle the "bought" status of an i
     }
 }
 
-function deleteItem(index) { // Function to delete an item from the shopping list
+// Delete Item from Shopping List
+function deleteItem(index) {
     if (index >= 0 && index < items.length) {
         items.splice(index, 1);
         renderItems();
@@ -69,7 +82,8 @@ function deleteItem(index) { // Function to delete an item from the shopping lis
     }
 }
 
-function editItem(index) { // Function to edit an item's name
+// Edit Item Name
+function editItem(index) {
     const newName = prompt("Edit item name:", items[index].name);
     if (newName) {
         items[index].name = newName;
@@ -78,11 +92,13 @@ function editItem(index) { // Function to edit an item's name
     }
 }
 
-function saveItemsToLocalStorage() { // Function to save the shopping list to localStorage
+// Save Shopping List to Local Storage
+function saveItemsToLocalStorage() {
     localStorage.setItem("items", JSON.stringify(items));
 }
 
-function loadItemsFromLocalStorage() { // Function to load the shopping list from localStorage
+// Load Shopping List from Local Storage
+function loadItemsFromLocalStorage() {
     const storedItems = JSON.parse(localStorage.getItem("items"));
     if (storedItems) {
         items.length = 0;
@@ -91,71 +107,36 @@ function loadItemsFromLocalStorage() { // Function to load the shopping list fro
     }
 }
 
-function clearItems() { // Function to clear all items from the shopping list
+// Clear All Items from Shopping List
+function clearItems() {
     items.length = 0;
     renderItems();
     saveItemsToLocalStorage();
 }
 
-function addTask() { // Function to add a task to the task list
+// Add Task to Task List
+function addTask() {
     let input = document.getElementById("taskInput");
     let task = input.value.trim();
     if (task) {
         tasks.push({ name: task, completed: false });
-      
         input.value = "";
-        renderTasks();
-        saveTasksToLocalStorage();
-    } 
-}
-
-function renderTasks() { // Function to render the task list
-  
-    const list = document.getElementById("taskList");
-    list.innerHTML = "";
-
-    tasks.forEach((task, i) => {
-        let taskElement = document.createElement("div");
-        taskElement.className = "task";
-        if (task.completed) taskElement.classList.add("completed");
-
-        let nameSpan = document.createElement("span");
-        nameSpan.textContent = task.name;
-
-        let toggleBtn = document.createElement("button");
-        toggleBtn.textContent = "Complete";
-        toggleBtn.addEventListener("click", () => {
-            toggleCompleted(i);
-        });
-
-        let deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.className = 'deleteBtn';
-        deleteBtn.addEventListener("click", () => {
-            deleteTask(i);
-        });
-
-        let editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () => {
-            editTask(i);
-        });
-
-        taskElement.append(nameSpan, toggleBtn, deleteBtn, editBtn);
-        list.appendChild(taskElement);
-    });
-}
-
-function toggleCompleted(index) { // Function to toggle the "completed" status of a task
-    if (tasks[index]) {
-        tasks[index].completed = !tasks[index].completed;
-        
         renderTasks();
         saveTasksToLocalStorage();
     }
 }
 
-function deleteTask(index) { // Function to delete a task from the task list
+// Toggle Completed Status of Task
+function toggleCompleted(index) {
+    if (tasks[index]) {
+        tasks[index].completed = !tasks[index].completed;
+        renderTasks();
+        saveTasksToLocalStorage();
+    }
+}
+
+// Delete Task from Task List
+function deleteTask(index) {
     if (index >= 0 && index < tasks.length) {
         tasks.splice(index, 1);
         renderTasks();
@@ -163,7 +144,8 @@ function deleteTask(index) { // Function to delete a task from the task list
     }
 }
 
-function editTask(index) { // Function to edit a task's name
+// Edit Task Name
+function editTask(index) {
     const newName = prompt("Edit task name:", tasks[index].name);
     if (newName) {
         tasks[index].name = newName;
@@ -172,11 +154,13 @@ function editTask(index) { // Function to edit a task's name
     }
 }
 
-function saveTasksToLocalStorage() { // Function to save the task list to localStorage
+// Save Task List to Local Storage
+function saveTasksToLocalStorage() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-function loadTasksFromLocalStorage() { // Function to load the task list from localStorage
+// Load Task List from Local Storage
+function loadTasksFromLocalStorage() {
     const storedTasks = JSON.parse(localStorage.getItem("tasks"));
     if (storedTasks) {
         tasks.length = 0;
@@ -185,13 +169,21 @@ function loadTasksFromLocalStorage() { // Function to load the task list from lo
     }
 }
 
-function clearTasks() { // Function to clear all tasks from the task list
+// Clear All Tasks from Task List
+function clearTasks() {
     tasks.length = 0;
     renderTasks();
     saveTasksToLocalStorage();
 }
 
-window.onload = function () { // Function to load saved data on page load
+// Event Listeners
+document.getElementById("addItemBtn").addEventListener("click", addItem);
+document.getElementById("addTaskBtn").addEventListener("click", addTask);
+document.getElementById("clearItemsBtn").addEventListener("click", clearItems);
+document.getElementById("clearTasksBtn").addEventListener("click", clearTasks);
+
+// On Page Load
+window.onload = function () {
     loadItemsFromLocalStorage();
     loadTasksFromLocalStorage();
     renderItems();
