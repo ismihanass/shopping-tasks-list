@@ -1,3 +1,6 @@
+const items = [];
+const tasks = [];
+
 // Create a button element
 function createButton(text, onClick) {
     const button = document.createElement("button");
