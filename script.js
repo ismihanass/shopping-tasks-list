@@ -131,6 +131,8 @@ function createButton(text, onClick) {
       renderTasks
     );
   }
+
+  //Event Listeners
   
   document.getElementById("addItemBtn").addEventListener("click", () =>
     addItemToList(items, "itemInput", "bought", renderItems, saveItemsToLocalStorage)
