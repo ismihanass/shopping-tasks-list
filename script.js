@@ -1,132 +1,203 @@
-const items = [];
-const tasks = [];
-
-// Helper functions
+// Create a button element
 function createButton(text, onClick) {
-    const button = document.createElement("button");
-    button.textContent = text;
-    button.addEventListener("click", onClick);
-    return button;
+  const button = document.createElement("button");
+  button.textContent = text;
+  button.addEventListener("click", onClick);
+  return button;
 }
 
-// Reusable render function for both lists
-function renderList(arr, listId, classPrefix, toggleKey, editFn, saveFn, renderFn) {
-    const list = document.getElementById(listId);
-    list.innerHTML = "";
+// Render the list of items or tasks
+function renderList(
+  arr,
+  listId,
+  classPrefix,
+  toggleKey,
+  editFunction,
+  saveFunction,
+  renderFunction
+) {
+  const list = document.getElementById(listId);
+  list.innerHTML = "";
 
-    arr.forEach((obj, i) => {
-        const element = document.createElement("div");
-        element.className = `${classPrefix} ${obj[toggleKey] ? toggleKey : ''}`;
+  arr.forEach((obj, index) => {
+    const itemElement = document.createElement("div");
+    itemElement.className = `${classPrefix} ${obj[toggleKey] ? toggleKey : ""}`;
 
-        element.appendChild(createButton("Toggle", () => toggleStatus(i, arr, toggleKey, renderFn, saveFn)));
-        element.appendChild(createButton("Delete", () => deleteRow(i, arr, renderFn, saveFn)));
-        element.appendChild(createButton("Edit", () => editFn(i)));
+    itemElement.appendChild(
+      createButton("Toggle", () =>
+        toggleStatus(index, arr, toggleKey, renderFunction, saveFunction)
+      )
+    );
+    itemElement.appendChild(
+      createButton("Delete", () =>
+        deleteItem(index, arr, renderFunction, saveFunction)
+      )
+    );
+    itemElement.appendChild(createButton("Edit", () => editFunction(index)));
 
-        const nameSpan = document.createElement("span");
-        nameSpan.textContent = obj.name;
-        element.prepend(nameSpan);
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = obj.name;
+    itemElement.prepend(nameSpan);
 
-        list.appendChild(element);
-    });
+    list.appendChild(itemElement);
+  });
 }
 
-// Reusable Add function
-function addItemToList(arr, inputId, nameKey, renderFn, saveFn) {
-    let input = document.getElementById(inputId);
-    let name = input.value.trim();
-    if (name) {
-        arr.push({ name: name, [nameKey]: false });
-        input.value = "";
-        renderFn();
-        saveFn();
-    }
+// Add a new item or task to the list
+function addItemToList(arr, inputId, statusKey, renderFunction, saveFunction) {
+  const input = document.getElementById(inputId);
+  const name = input.value.trim();
+
+  if (name) {
+    arr.push({ name: name, [statusKey]: false });
+    input.value = "";
+    renderFunction();
+    saveFunction();
+  }
 }
 
-// Reusable Edit function
-function editItemInList(arr, index, nameKey, renderFn, saveFn) {
-    const newName = prompt("Edit name:", arr[index].name);
-    if (newName) {
-        arr[index].name = newName;
-        renderFn();
-        saveFn();
-    }
+// Edit an existing item or task in the list
+function editItemInList(arr, index, statusKey, renderFunction, saveFunction) {
+  const newName = prompt("Edit name:", arr[index].name);
+
+  if (newName) {
+    arr[index].name = newName;
+    renderFunction();
+    saveFunction();
+  }
 }
 
-// Reusable Clear function
-function clearList(arr, renderFn, saveFn) {
-    arr.length = 0;
-    renderFn();
-    saveFn();
+// Clear the list of items or tasks
+function clearList(arr, renderFunction, saveFunction) {
+  arr.length = 0;
+  renderFunction();
+  saveFunction();
 }
 
-// Render Shopping List
-function renderItems() {
-    renderList(items, "shoppingList", "item", "bought", (i) => editItemInList(items, i, "bought", renderItems, saveItemsToLocalStorage), saveItemsToLocalStorage, renderItems);
+// Toggle the status of an item or task
+function toggleStatus(index, arr, key, renderFunction, saveFunction) {
+  if (arr[index]) {
+    arr[index][key] = !arr[index][key];
+    renderFunction();
+    saveFunction();
+  }
 }
 
-// Render Task List
-function renderTasks() {
-    renderList(tasks, "taskList", "task", "completed", (i) => editItemInList(tasks, i, "completed", renderTasks, saveTasksToLocalStorage), saveTasksToLocalStorage, renderTasks);
+// Delete an item or task from the list
+function deleteItem(index, arr, renderFunction, saveFunction) {
+  if (index >= 0 && index < arr.length) {
+    arr.splice(index, 1);
+    renderFunction();
+    saveFunction();
+  }
 }
 
-// Toggle Function
-function toggleStatus(index, arr, key, render, save) {
-    if (arr[index]) {
-        arr[index][key] = !arr[index][key];
-        render();
-        save();
-    }
-}
-
-// Save Shopping List to Local Storage
+// Save the items to localStorage
 function saveItemsToLocalStorage() {
-    localStorage.setItem("items", JSON.stringify(items));
+  localStorage.setItem("items", JSON.stringify(items));
 }
 
-// Load Shopping List from Local Storage
+// Load the items from localStorage
 function loadItemsFromLocalStorage() {
-    const storedItems = JSON.parse(localStorage.getItem("items"));
-    if (storedItems) {
-        items.length = 0;
-        items.push(...storedItems);
-        renderItems();
-    }
-}
-
-// Save Task List to Local Storage
-function saveTasksToLocalStorage() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-// Load Task List from Local Storage
-function loadTasksFromLocalStorage() {
-    const storedTasks = JSON.parse(localStorage.getItem("tasks"));
-    if (storedTasks) {
-        tasks.length = 0;
-        tasks.push(...storedTasks);
-        renderTasks();
-    }
-}
-
-// Delete function
-function deleteRow(index, arr, render, save) {
-    if (index >= 0 && index < arr.length) {
-        arr.splice(index, 1);
-        render();
-        save();
-    }
-}
-
-// Event Listeners
-document.getElementById("addItemBtn").addEventListener("click", () => addItemToList(items, "itemInput", "bought", renderItems, saveItemsToLocalStorage));
-document.getElementById("addTaskBtn").addEventListener("click", () => addItemToList(tasks, "taskInput", "completed", renderTasks, saveTasksToLocalStorage));
-document.getElementById("clearItemsBtn").addEventListener("click", () => clearList(items, renderItems, saveItemsToLocalStorage));
-document.getElementById("clearTasksBtn").addEventListener("click", () => clearList(tasks, renderTasks, saveTasksToLocalStorage));
-
-// On Page Load
-window.onload = function () {
-    loadItemsFromLocalStorage();
-    loadTasksFromLocalStorage();
+  const storedItems = JSON.parse(localStorage.getItem("items"));
+  if (storedItems) {
+    items.length = 0;
+    items.push(...storedItems);
     renderItems();
+  }
+}
+
+// Save the tasks to localStorage
+function saveTasksToLocalStorage() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+// Load the tasks from localStorage
+function loadTasksFromLocalStorage() {
+  const storedTasks = JSON.parse(localStorage.getItem("tasks"));
+  if (storedTasks) {
+    tasks.length = 0;
+    tasks.push(...storedTasks);
     renderTasks();
+  }
+}
+
+// Render the list of items
+function renderItems() {
+  renderList(
+    items,
+    "shoppingList",
+    "item",
+    "bought",
+    (index) =>
+      editItemInList(
+        items,
+        index,
+        "bought",
+        renderItems,
+        saveItemsToLocalStorage
+      ),
+    saveItemsToLocalStorage,
+    renderItems
+  );
+}
+
+// Render the list of tasks
+function renderTasks() {
+  renderList(
+    tasks,
+    "taskList",
+    "task",
+    "completed",
+    (index) =>
+      editItemInList(
+        tasks,
+        index,
+        "completed",
+        renderTasks,
+        saveTasksToLocalStorage
+      ),
+    saveTasksToLocalStorage,
+    renderTasks
+  );
+}
+
+document
+  .getElementById("addItemBtn")
+  .addEventListener("click", () =>
+    addItemToList(
+      items,
+      "itemInput",
+      "bought",
+      renderItems,
+      saveItemsToLocalStorage
+    )
+  );
+document
+  .getElementById("addTaskBtn")
+  .addEventListener("click", () =>
+    addItemToList(
+      tasks,
+      "taskInput",
+      "completed",
+      renderTasks,
+      saveTasksToLocalStorage
+    )
+  );
+document
+  .getElementById("clearItemsBtn")
+  .addEventListener("click", () =>
+    clearList(items, renderItems, saveItemsToLocalStorage)
+  );
+document
+  .getElementById("clearTasksBtn")
+  .addEventListener("click", () =>
+    clearList(tasks, renderTasks, saveTasksToLocalStorage)
+  );
+
+window.onload = function () {
+  loadItemsFromLocalStorage();
+  loadTasksFromLocalStorage();
+  renderItems();
+  renderTasks();
 };
